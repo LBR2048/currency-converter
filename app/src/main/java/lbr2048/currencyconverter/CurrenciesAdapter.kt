@@ -1,5 +1,6 @@
 package lbr2048.currencyconverter
 
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -8,23 +9,18 @@ import android.widget.TextView
 
 import kotlinx.android.synthetic.main.fragment_currency_item.view.*
 
-/**
- * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
- * specified [OnListFragmentInteractionListener].
- * TODO: Replace the implementation with code for your data type.
- */
 class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<CurrenciesAdapter.ViewHolder>() {
 
     private var values: List<Currency> = emptyList()
 
-    private val mOnClickListener: View.OnClickListener
+    private val onClickListener: View.OnClickListener
 
     init {
-        mOnClickListener = View.OnClickListener { v ->
+        onClickListener = View.OnClickListener { v ->
             val item = v.tag as Currency
-            // Notify the active callbacks interface (the activity, if the fragment is attached to
-            // one) that an item has been selected.
-//            mListener?.onListFragmentInteraction(item)
+            Log.i("CLICK", "$item clicked")
+            viewModel.setInputValue(item.value)
+            viewModel.setInputCurrency(item.id)
         }
     }
 
@@ -42,7 +38,7 @@ class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<C
 
         with(holder.view) {
             tag = item
-            setOnClickListener(mOnClickListener)
+            setOnClickListener(onClickListener)
         }
     }
 
