@@ -30,13 +30,13 @@ class CurrenciesViewModel : ViewModel() {
 
         _inputCurrency.value = "EUR"
 
-        convert()
-
         _currencies.value = listOf(
             Currency("EUR", "Euro", 1.0),
             Currency("PLN", "Zloty", 2.0),
             Currency("BRL", "Real", 3.0)
         )
+
+        convert()
     }
 
     fun setInputValue(value: Double) {
