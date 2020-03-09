@@ -23,6 +23,23 @@ android {
         }
     }
 
+    // https://stackoverflow.com/questions/49891730/invoke-customs-are-only-supported-starting-with-android-0-min-api-26
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // https://github.com/Kotlin/kotlinx.coroutines/issues/1059
+    packagingOptions {
+        exclude 'META-INF/atomicfu.kotlin_module'
+    }
+}
+
+ext {
+    version_kotlin_coroutines = '1.2.0'
+    version_retrofit = '2.7.2'
+    version_moshi = '1.9.2'
+    version_retrofit_coroutines_adapter = '0.9.2'
 }
 
 dependencies {
@@ -34,7 +51,23 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_kotlin_coroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version_kotlin_coroutines"
+
+    // Moshi
+    implementation "com.squareup.moshi:moshi:$version_moshi"
+    implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$version_retrofit"
+    implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
+    implementation "com.squareup.retrofit2:converter-scalars:$version_retrofit"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$version_retrofit_coroutines_adapter"
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+

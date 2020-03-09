@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_currency.*
+import lbr2048.currencyconverter.remote.CurrenciesViewModel
 
 
 class CurrenciesFragment : Fragment() {

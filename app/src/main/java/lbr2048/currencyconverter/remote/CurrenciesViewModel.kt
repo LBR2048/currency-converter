@@ -1,9 +1,16 @@
-package lbr2048.currencyconverter
+package lbr2048.currencyconverter.remote
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import lbr2048.currencyconverter.CurrenciesWeb
+import lbr2048.currencyconverter.Currency
+import java.lang.Exception
 
 class CurrenciesViewModel : ViewModel() {
     
@@ -19,24 +26,23 @@ class CurrenciesViewModel : ViewModel() {
     val currencies: LiveData<List<Currency>>
         get() = _currencies
 
-    private val exchangeRates = mapOf(
-        "EUR" to 1,
-        "PLN" to 2,
-        "BRL" to 3
-    )
+    private lateinit var exchangeRates: Map<String, Double?>
+
+    private var viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     init {
         _inputValue.value = 10.0
 
         _inputCurrency.value = "EUR"
 
+        getExchangeRates()
+
         _currencies.value = listOf(
             Currency("EUR", "Euro", 1.0),
             Currency("PLN", "Zloty", 2.0),
             Currency("BRL", "Real", 3.0)
         )
-
-        convert()
     }
 
     fun setInputValue(value: Double) {
@@ -88,5 +94,26 @@ class CurrenciesViewModel : ViewModel() {
 
     private fun convert(value: Double, inputCurrency: String, outputCurrency: String): Double {
         return value / exchangeRates[inputCurrency]!! * exchangeRates[outputCurrency]!!
+    }
+
+    private fun getExchangeRates() {
+        coroutineScope.launch {
+            val getCurrenciesDeferred = CurrenciesWeb.retrofitService.getCurrencies()
+            try {
+                val result = getCurrenciesDeferred.await()
+                Log.i("REMOTE_TAG", result.toString())
+
+                // TODO put these calls outside of this function
+                exchangeRates = result.rates.getRatesMap()
+                convert()
+            } catch (e: Exception) {
+                Log.e("REMOTE_TAG", e.toString())
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
     }
 }

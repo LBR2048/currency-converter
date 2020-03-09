@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.TextView
 
 import kotlinx.android.synthetic.main.fragment_currency_item.view.*
+import lbr2048.currencyconverter.remote.CurrenciesViewModel
 
 class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<CurrenciesAdapter.ViewHolder>() {
 
