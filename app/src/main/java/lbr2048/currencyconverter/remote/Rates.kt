@@ -1,6 +1,7 @@
 package lbr2048.currencyconverter.remote
 
 import com.squareup.moshi.Json
+import lbr2048.currencyconverter.Currency
 
 data class Rates(
     @Json(name = "AUD") var AUD: Double? = null,
@@ -68,5 +69,40 @@ data class Rates(
         "THB" to THB,
         "USD" to USD,
         "ZAR" to ZAR
+    )
+
+    fun getRates(): List<Currency> = listOf(
+        Currency("EUR"),
+        Currency("AUD"),
+        Currency("BGN"),
+        Currency("BRL"),
+        Currency("CAD"),
+        Currency("CHF"),
+        Currency("CNY"),
+        Currency("CZK"),
+        Currency("DKK"),
+        Currency("GBP"),
+        Currency("HKD"),
+        Currency("HRK"),
+        Currency("HUF"),
+        Currency("IDR"),
+        Currency("ILS"),
+        Currency("INR"),
+        Currency("ISK"),
+        Currency("JPY"),
+        Currency("KRW"),
+        Currency("MXN"),
+        Currency("MYR"),
+        Currency("NOK"),
+        Currency("NZD"),
+        Currency("PHP"),
+        Currency("PLN"),
+        Currency("RON"),
+        Currency("RUB"),
+        Currency("SEK"),
+        Currency("SGD"),
+        Currency("THB"),
+        Currency("USD"),
+        Currency("ZAR")
     )
 }

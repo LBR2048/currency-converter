@@ -37,12 +37,6 @@ class CurrenciesViewModel : ViewModel() {
         _inputCurrency.value = "EUR"
 
         getExchangeRates()
-
-        _currencies.value = listOf(
-            Currency("EUR", "Euro", 1.0),
-            Currency("PLN", "Zloty", 2.0),
-            Currency("BRL", "Real", 3.0)
-        )
     }
 
     fun setInputValue(value: Double) {
@@ -104,10 +98,12 @@ class CurrenciesViewModel : ViewModel() {
                 Log.i("REMOTE_TAG", result.toString())
 
                 // TODO put these calls outside of this function
+                _currencies.value = result.rates.getRates()
                 exchangeRates = result.rates.getRatesMap()
                 convert()
             } catch (e: Exception) {
                 Log.e("REMOTE_TAG", e.toString())
+                // TODO show error message
             }
         }
     }
