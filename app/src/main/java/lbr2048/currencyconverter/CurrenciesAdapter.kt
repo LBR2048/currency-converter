@@ -1,10 +1,14 @@
 package lbr2048.currencyconverter
 
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 
 import kotlinx.android.synthetic.main.fragment_currency_item.view.*
@@ -14,12 +18,28 @@ class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<C
     private var values: List<Currency> = emptyList()
 
     private val onClickListener: View.OnClickListener
+    private val onConvertClickListener: View.OnClickListener
+    private val textWatcher: TextWatcher
 
     init {
         onClickListener = View.OnClickListener { v ->
             val item = v.tag as Currency
             Log.i("CLICK", "$item clicked")
             viewModel.setInputValueAndCurrency(item.value, item.id)
+        }
+
+        onConvertClickListener = View.OnClickListener { v ->
+            val item = v.tag as Currency
+            Log.i("CONVERT_TAG", "Convert item ${item.id} ${item.value}")
+            viewModel.setInputValueAndCurrency(item.value, item.id)
+        }
+
+        textWatcher = object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.i("TEXT_TAG", "Item value is $s")
+            }
         }
     }
 
@@ -33,17 +53,28 @@ class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<C
         val item = values[position]
         holder.idView.text = item.id
         holder.contentView.text = item.name
-        holder.valueView.text = item.value.toString()
+        holder.valueView.setText(item.value.toString())
 
         with(holder.view) {
             tag = item
             setOnClickListener(onClickListener)
+        }
+
+        with(holder.convertButton) {
+            tag = item
+            setOnClickListener(onConvertClickListener)
+        }
+
+        with(holder.valueView) {
+            tag = item
+            addTextChangedListener(textWatcher)
         }
     }
 
     override fun getItemCount(): Int = values.size
 
     fun replace(currencies: List<Currency>) {
+        Log.i("TEXT_TAG", "Replacing list items")
         values = currencies
         notifyDataSetChanged()
     }
@@ -51,7 +82,8 @@ class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<C
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val idView: TextView = view.item_number
         val contentView: TextView = view.content
-        val valueView: TextView = view.value
+        val valueView: EditText = view.value
+        val convertButton: Button = view.itemConvertButton
 
         override fun toString(): String {
             return super.toString() + " '" + contentView.text + "'"
