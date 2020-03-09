@@ -42,15 +42,31 @@ class CurrenciesViewModel : ViewModel() {
     fun setInputValue(value: Double) {
         if (_inputValue.value != value) {
             _inputValue.value = value
+            convert()
         }
-        convert()
     }
 
     fun setInputCurrency(currency: String) {
         if (_inputCurrency.value != currency) {
             _inputCurrency.value = currency
+            convert()
         }
-        convert()
+    }
+
+    fun setInputValueAndCurrency(value: Double, currency: String) {
+        var isValueChanged = false
+        var isCurrencyChanged = false
+        if (_inputValue.value != value) {
+            _inputValue.value = value
+            isValueChanged = true
+        }
+        if (_inputCurrency.value != currency) {
+            _inputCurrency.value = currency
+            isCurrencyChanged = true
+        }
+        if (isValueChanged or isCurrencyChanged) {
+            convert()
+        }
     }
 
     fun convert() {
@@ -59,11 +75,11 @@ class CurrenciesViewModel : ViewModel() {
 
     // TODO improve code, it is confusing
     private fun convert(value: Double, inputCurrency: String) {
-        Log.i("TAG", "Convert $value from $inputCurrency")
+        Log.i("CONVERT_TAG", "Convert $value from $inputCurrency")
 
         val newCurrencies: MutableList<Currency> = mutableListOf()
         _currencies.value?.map {
-            Log.i("TAG", convert(value, inputCurrency, it.id).toString())
+            Log.i("CONVERT_TAG", convert(value, inputCurrency, it.id).toString())
             newCurrencies.add(Currency(it.id, it.name, convert(value, inputCurrency, it.id)))
         }
 

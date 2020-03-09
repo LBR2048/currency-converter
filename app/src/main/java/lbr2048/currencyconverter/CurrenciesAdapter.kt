@@ -19,8 +19,7 @@ class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<C
         onClickListener = View.OnClickListener { v ->
             val item = v.tag as Currency
             Log.i("CLICK", "$item clicked")
-            viewModel.setInputValue(item.value)
-            viewModel.setInputCurrency(item.id)
+            viewModel.setInputValueAndCurrency(item.value, item.id)
         }
     }
 
