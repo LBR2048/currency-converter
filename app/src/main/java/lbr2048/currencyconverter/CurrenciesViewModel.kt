@@ -40,11 +40,17 @@ class CurrenciesViewModel : ViewModel() {
     }
 
     fun setInputValue(value: Double) {
-        _inputValue.value = value
+        if (_inputValue.value != value) {
+            _inputValue.value = value
+        }
+        convert()
     }
 
     fun setInputCurrency(currency: String) {
-        _inputCurrency.value = currency
+        if (_inputCurrency.value != currency) {
+            _inputCurrency.value = currency
+        }
+        convert()
     }
 
     fun convert() {
