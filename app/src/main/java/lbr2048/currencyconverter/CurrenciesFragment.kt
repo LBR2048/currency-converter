@@ -40,7 +40,7 @@ class CurrenciesFragment : Fragment() {
         })
 
         viewModel.currencies.observe(viewLifecycleOwner, Observer {
-            currenciesAdapter.replace(it)
+            currenciesAdapter.submitList(it)
         })
 
         // Set the adapter

@@ -10,13 +10,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 
 import kotlinx.android.synthetic.main.fragment_currency_item.view.*
 import lbr2048.currencyconverter.remote.CurrenciesViewModel
 
-class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<CurrenciesAdapter.ViewHolder>() {
-
-    private var values: List<Currency> = emptyList()
+class CurrenciesAdapter(viewModel: CurrenciesViewModel) : ListAdapter<Currency, CurrenciesAdapter.ViewHolder>(CurrencyDiffCallback()) {
 
     private val onClickListener: View.OnClickListener
     private val onConvertClickListener: View.OnClickListener
@@ -51,7 +51,7 @@ class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<C
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = values[position]
+        val item = getItem(position)
         holder.idView.text = item.id
         holder.contentView.text = item.name
         holder.valueView.setText(item.value.toString())
@@ -72,14 +72,6 @@ class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<C
         }
     }
 
-    override fun getItemCount(): Int = values.size
-
-    fun replace(currencies: List<Currency>) {
-        Log.i("TEXT_TAG", "Replacing list items")
-        values = currencies
-        notifyDataSetChanged()
-    }
-
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val idView: TextView = view.item_number
         val contentView: TextView = view.content
@@ -89,5 +81,15 @@ class CurrenciesAdapter(viewModel: CurrenciesViewModel) : RecyclerView.Adapter<C
         override fun toString(): String {
             return super.toString() + " '" + contentView.text + "'"
         }
+    }
+}
+
+class CurrencyDiffCallback : DiffUtil.ItemCallback<Currency>() {
+    override fun areItemsTheSame(oldItem: Currency, newItem: Currency): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Currency, newItem: Currency): Boolean {
+        return oldItem == newItem
     }
 }
