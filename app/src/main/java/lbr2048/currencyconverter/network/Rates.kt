@@ -1,4 +1,4 @@
-package lbr2048.currencyconverter.remote
+package lbr2048.currencyconverter.network
 
 import com.squareup.moshi.Json
 import lbr2048.currencyconverter.Currency
@@ -36,6 +36,7 @@ data class Rates(
     @Json(name = "USD") var USD: Double? = null,
     @Json(name = "ZAR") var ZAR: Double? = null
 ) {
+
     fun getRatesMap(): Map<String, Double?> = mapOf(
         "EUR" to 1.0,
         "AUD" to AUD,
@@ -72,37 +73,37 @@ data class Rates(
     )
 
     fun getRates(): List<Currency> = listOf(
-        Currency("EUR"),
-        Currency("AUD"),
-        Currency("BGN"),
-        Currency("BRL"),
-        Currency("CAD"),
-        Currency("CHF"),
-        Currency("CNY"),
-        Currency("CZK"),
-        Currency("DKK"),
-        Currency("GBP"),
-        Currency("HKD"),
-        Currency("HRK"),
-        Currency("HUF"),
-        Currency("IDR"),
-        Currency("ILS"),
-        Currency("INR"),
-        Currency("ISK"),
-        Currency("JPY"),
-        Currency("KRW"),
-        Currency("MXN"),
-        Currency("MYR"),
-        Currency("NOK"),
-        Currency("NZD"),
-        Currency("PHP"),
-        Currency("PLN"),
-        Currency("RON"),
-        Currency("RUB"),
-        Currency("SEK"),
-        Currency("SGD"),
-        Currency("THB"),
-        Currency("USD"),
-        Currency("ZAR")
+        Currency(id = "EUR", value = 1.0),
+        Currency(id = "AUD", value = AUD!!),
+        Currency(id = "BGN", value = BGN!!),
+        Currency(id = "BRL", value = BRL!!),
+        Currency(id = "CAD", value = CAD!!),
+        Currency(id = "CHF", value = CHF!!),
+        Currency(id = "CNY", value = CNY!!),
+        Currency(id = "CZK", value = CZK!!),
+        Currency(id = "DKK", value = DKK!!),
+        Currency(id = "GBP", value = GBP!!),
+        Currency(id = "HKD", value = HKD!!),
+        Currency(id = "HRK", value = HRK!!),
+        Currency(id = "HUF", value = HUF!!),
+        Currency(id = "IDR", value = IDR!!),
+        Currency(id = "ILS", value = ILS!!),
+        Currency(id = "INR", value = INR!!),
+        Currency(id = "ISK", value = ISK!!),
+        Currency(id = "JPY", value = JPY!!),
+        Currency(id = "KRW", value = KRW!!),
+        Currency(id = "MXN", value = MXN!!),
+        Currency(id = "MYR", value = MYR!!),
+        Currency(id = "NOK", value = NOK!!),
+        Currency(id = "NZD", value = NZD!!),
+        Currency(id = "PHP", value = PHP!!),
+        Currency(id = "PLN", value = PLN!!),
+        Currency(id = "RON", value = RON!!),
+        Currency(id = "RUB", value = RUB!!),
+        Currency(id = "SEK", value = SEK!!),
+        Currency(id = "SGD", value = SGD!!),
+        Currency(id = "THB", value = THB!!),
+        Currency(id = "USD", value = USD!!),
+        Currency(id = "ZAR", value = ZAR!!)
     )
 }

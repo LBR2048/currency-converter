@@ -12,8 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_currency.*
-import lbr2048.currencyconverter.remote.CurrenciesViewModel
-
+import lbr2048.currencyconverter.database.getDatabase
 
 class CurrenciesFragment : Fragment() {
 
@@ -28,7 +27,9 @@ class CurrenciesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this).get(CurrenciesViewModel::class.java)
+        val repository = CurrenciesRepository(getDatabase(requireContext()))
+        viewModel = ViewModelProvider(this, CurrenciesViewModel.Factory(repository))
+            .get(CurrenciesViewModel::class.java)
         currenciesAdapter = CurrenciesAdapter(viewModel)
 
         viewModel.inputValue.observe(viewLifecycleOwner, Observer {

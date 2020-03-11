@@ -10,12 +10,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
 import kotlinx.android.synthetic.main.fragment_currency_item.view.*
-import lbr2048.currencyconverter.remote.CurrenciesViewModel
 
 class CurrenciesAdapter(private val viewModel: CurrenciesViewModel)
     : ListAdapter<Currency, CurrenciesAdapter.ViewHolder>(CurrencyDiffCallback()) {

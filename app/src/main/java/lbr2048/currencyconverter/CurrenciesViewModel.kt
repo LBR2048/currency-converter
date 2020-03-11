@@ -1,23 +1,19 @@
-package lbr2048.currencyconverter.remote
+package lbr2048.currencyconverter
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import lbr2048.currencyconverter.CurrenciesWeb
-import lbr2048.currencyconverter.Currency
 import java.lang.Exception
 
-class CurrenciesViewModel : ViewModel() {
-    
+class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewModel() {
+
     private val _inputValue = MutableLiveData<Double>()
     val inputValue: LiveData<Double>
-        get() = _inputValue    
-    
+        get() = _inputValue
+
     private val _inputCurrency = MutableLiveData<String>()
     val inputCurrency: LiveData<String>
         get() = _inputCurrency
@@ -36,7 +32,7 @@ class CurrenciesViewModel : ViewModel() {
 
         _inputCurrency.value = "EUR"
 
-        getExchangeRates()
+        getExchangeRatesFromNetwork()
     }
 
     fun setInputValue(value: Double) {
@@ -91,7 +87,17 @@ class CurrenciesViewModel : ViewModel() {
         return value / exchangeRates[inputCurrency]!! * exchangeRates[outputCurrency]!!
     }
 
-    private fun getExchangeRates() {
+    private fun getExchangeRatesFromRepository() {
+        coroutineScope.launch {
+            try {
+                repository.refreshRates()
+            } catch (e: Exception) {
+
+            }
+        }
+    }
+
+    private fun getExchangeRatesFromNetwork() {
         coroutineScope.launch {
             val getCurrenciesDeferred = CurrenciesWeb.retrofitService.getCurrencies()
             try {
@@ -112,5 +118,18 @@ class CurrenciesViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
+    }
+
+    /**
+     * Factory for constructing DevByteViewModel with parameter
+     */
+    class Factory(val repository: CurrenciesRepository) : ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(CurrenciesViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return CurrenciesViewModel(repository) as T
+            }
+            throw IllegalArgumentException("Unable to construct viewmodel")
+        }
     }
 }
