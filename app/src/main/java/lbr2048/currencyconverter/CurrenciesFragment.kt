@@ -78,4 +78,14 @@ class CurrenciesFragment : Fragment() {
             )
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.startTimer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.cancelTimer()
+    }
 }

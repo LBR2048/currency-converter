@@ -6,8 +6,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.concurrent.schedule
 
 class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewModel() {
+
+    private lateinit var timer: Timer
 
     private val _inputValue = MutableLiveData<Double>()
     val inputValue: LiveData<Double>
@@ -36,8 +40,17 @@ class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewMo
         result.addSource(rates) {
             result.value =  combineLatestData(inputValue, inputCurrency, rates)
         }
+    }
 
-        getExchangeRatesFromRepository()
+    fun startTimer() {
+        timer = Timer()
+        timer.schedule(0, 1000) {
+            getExchangeRatesFromRepository()
+        }
+    }
+
+    fun cancelTimer() {
+        timer.cancel()
     }
 
     fun setInputValue(value: Double) {
@@ -123,6 +136,7 @@ class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewMo
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
+        timer.cancel()
     }
 
     class Factory(val repository: CurrenciesRepository) : ViewModelProvider.Factory {
