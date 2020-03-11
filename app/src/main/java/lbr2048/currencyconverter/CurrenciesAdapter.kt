@@ -10,39 +10,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
 import kotlinx.android.synthetic.main.fragment_currency_item.view.*
 import lbr2048.currencyconverter.remote.CurrenciesViewModel
 
-class CurrenciesAdapter(viewModel: CurrenciesViewModel) : ListAdapter<Currency, CurrenciesAdapter.ViewHolder>(CurrencyDiffCallback()) {
-
-    private val onClickListener: View.OnClickListener
-    private val onConvertClickListener: View.OnClickListener
-    private val textWatcher: TextWatcher
-
-    init {
-        onClickListener = View.OnClickListener { v ->
-            val item = v.tag as Currency
-            Log.i("CLICK", "$item clicked")
-            viewModel.setInputValueAndCurrency(item.value, item.id)
-        }
-
-        onConvertClickListener = View.OnClickListener { v ->
-            val item = v.tag as Currency
-            Log.i("CONVERT_TAG", "Convert item ${item.id} ${item.value}")
-            viewModel.setInputValueAndCurrency(item.value, item.id)
-        }
-
-        textWatcher = object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {}
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.i("TEXT_TAG", "Item value is $s")
-            }
-        }
-    }
+class CurrenciesAdapter(private val viewModel: CurrenciesViewModel)
+    : ListAdapter<Currency, CurrenciesAdapter.ViewHolder>(CurrencyDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -57,18 +33,37 @@ class CurrenciesAdapter(viewModel: CurrenciesViewModel) : ListAdapter<Currency, 
         holder.valueView.setText(item.value.toString())
 
         with(holder.view) {
-            tag = item
-            setOnClickListener(onClickListener)
+            setOnClickListener {
+                Log.i("CLICK_TAG", "$item item clicked")
+                viewModel.setInputValueAndCurrency(item.value, item.id)
+            }
+        }
+
+        val textWatcher = object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.i("TEXT_TAG", "Item value is $s")
+                viewModel.setInputValueAndCurrency(s.toString().toDouble(), item.id)
+            }
+        }
+        with(holder.valueView) {
+            setOnFocusChangeListener { view, b ->
+                if (b) {
+                    Log.i("TEXT_TAG", "$item gained focus")
+                    this.addTextChangedListener(textWatcher)
+                } else {
+                    Log.i("TEXT_TAG", "$item lost focus")
+                    this.removeTextChangedListener(textWatcher)
+                }
+            }
         }
 
         with(holder.convertButton) {
-            tag = item
-            setOnClickListener(onConvertClickListener)
-        }
-
-        with(holder.valueView) {
-            tag = item
-            addTextChangedListener(textWatcher)
+            setOnClickListener {
+                Log.i("CONVERT_TAG", "Convert item ${item.id} ${item.value}")
+                viewModel.setInputValueAndCurrency(item.value, item.id)
+            }
         }
     }
 

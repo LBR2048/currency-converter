@@ -86,6 +86,7 @@ class CurrenciesViewModel : ViewModel() {
         _currencies.value = newCurrencies
     }
 
+    // TODO Fix rounding error when fixing from the same conversion to itself
     private fun convert(value: Double, inputCurrency: String, outputCurrency: String): Double {
         return value / exchangeRates[inputCurrency]!! * exchangeRates[outputCurrency]!!
     }
