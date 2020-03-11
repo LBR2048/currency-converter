@@ -40,7 +40,7 @@ class CurrenciesFragment : Fragment() {
             currency.setText(it)
         })
 
-        viewModel.currencies.observe(viewLifecycleOwner, Observer {
+        viewModel.result.observe(viewLifecycleOwner, Observer {
             currenciesAdapter.submitList(it)
         })
 
@@ -50,6 +50,7 @@ class CurrenciesFragment : Fragment() {
             adapter = currenciesAdapter
         }
 
+        // TODO remove (this is just for prototyping)
         currency.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -59,6 +60,7 @@ class CurrenciesFragment : Fragment() {
             }
         })
 
+        // TODO remove (this is just for prototyping)
         value.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -68,10 +70,12 @@ class CurrenciesFragment : Fragment() {
             }
         })
 
+        // TODO remove (this is just for prototyping)
         convertButton.setOnClickListener {
-            viewModel.setInputValue(value.text.toString().toDouble())
-            viewModel.setInputCurrency(currency.text.toString())
-            viewModel.convert()
+            viewModel.setInputValueAndCurrency(
+                value.text.toString().toDouble(),
+                currency.text.toString()
+            )
         }
     }
 }

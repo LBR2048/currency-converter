@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewModel() {
 
@@ -17,74 +16,98 @@ class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewMo
     private val _inputCurrency = MutableLiveData<String>()
     val inputCurrency: LiveData<String>
         get() = _inputCurrency
-    
-    private val _currencies = MutableLiveData<List<Currency>>()
-    val currencies: LiveData<List<Currency>>
-        get() = _currencies
 
-    private lateinit var exchangeRates: Map<String, Double?>
+    private val rates: LiveData<List<Currency>> = repository.rates
+    val result = MediatorLiveData<List<Currency>>()
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     init {
-        _inputValue.value = 10.0
 
-        _inputCurrency.value = "EUR"
+        setInputValueAndCurrency(1.0, "EUR")
 
-        getExchangeRatesFromNetwork()
+        result.addSource(inputValue) {
+            result.value =  combineLatestData(inputValue, inputCurrency, rates)
+        }
+        result.addSource(inputCurrency) {
+            result.value =  combineLatestData(inputValue, inputCurrency, rates)
+        }
+        result.addSource(rates) {
+            result.value =  combineLatestData(inputValue, inputCurrency, rates)
+        }
+
+        getExchangeRatesFromRepository()
     }
 
     fun setInputValue(value: Double) {
         if (_inputValue.value != value) {
             _inputValue.value = value
-            convert()
         }
     }
 
     fun setInputCurrency(currency: String) {
         if (_inputCurrency.value != currency) {
             _inputCurrency.value = currency
-            convert()
         }
     }
 
     fun setInputValueAndCurrency(value: Double, currency: String) {
-        var isValueChanged = false
-        var isCurrencyChanged = false
         if (_inputValue.value != value) {
             _inputValue.value = value
-            isValueChanged = true
         }
         if (_inputCurrency.value != currency) {
             _inputCurrency.value = currency
-            isCurrencyChanged = true
-        }
-        if (isValueChanged or isCurrencyChanged) {
-            convert()
         }
     }
 
-    fun convert() {
-        convert(_inputValue.value!!, _inputCurrency.value!!)
+    private fun combineLatestData(
+        inputValueResult: LiveData<Double>,
+        inputCurrencyResult: LiveData<String>,
+        ratesResult: LiveData<List<Currency>>
+    ): List<Currency> {
+        val inputValue = inputValueResult.value
+        val inputCurrency = inputCurrencyResult.value
+        val rates = ratesResult.value
+
+        if (inputValue == null || inputCurrency == null || rates == null) {
+            // TODO show error
+            return emptyList()
+        }
+
+        return convertAll(inputValue, inputCurrency, rates.asMap(), rates)
     }
 
     // TODO improve code, it is confusing
-    private fun convert(value: Double, inputCurrency: String) {
+    private fun convertAll(
+        value: Double,
+        inputCurrency: String,
+        ratesMap: Map<String, Double?>,
+        rates: List<Currency>?
+    ): MutableList<Currency> {
         Log.i("CONVERT_TAG", "Convert $value from $inputCurrency")
 
         val newCurrencies: MutableList<Currency> = mutableListOf()
-        _currencies.value?.map {
-            Log.i("CONVERT_TAG", convert(value, inputCurrency, it.id).toString())
-            newCurrencies.add(Currency(it.id, it.name, convert(value, inputCurrency, it.id)))
+        rates?.map {
+            newCurrencies.add(Currency(it.id, it.name, convert(
+                value,
+                inputCurrency,
+                it.id,
+                ratesMap
+            )))
         }
 
-        _currencies.value = newCurrencies
+        return newCurrencies
     }
 
     // TODO Fix rounding error when fixing from the same conversion to itself
-    private fun convert(value: Double, inputCurrency: String, outputCurrency: String): Double {
-        return value / exchangeRates[inputCurrency]!! * exchangeRates[outputCurrency]!!
+    private fun convert(
+        value: Double,
+        inputCurrency: String,
+        outputCurrency: String,
+        ratesMap: Map<String, Double?>
+    ): Double {
+        return value / ratesMap[inputCurrency]!! * ratesMap[outputCurrency]!!
     }
 
     private fun getExchangeRatesFromRepository() {
@@ -97,32 +120,11 @@ class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewMo
         }
     }
 
-    private fun getExchangeRatesFromNetwork() {
-        coroutineScope.launch {
-            val getCurrenciesDeferred = CurrenciesWeb.retrofitService.getCurrencies()
-            try {
-                val result = getCurrenciesDeferred.await()
-                Log.i("REMOTE_TAG", result.toString())
-
-                // TODO put these calls outside of this function
-                _currencies.value = result.rates.getRates()
-                exchangeRates = result.rates.getRatesMap()
-                convert()
-            } catch (e: Exception) {
-                Log.e("REMOTE_TAG", e.toString())
-                // TODO show error message
-            }
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
     }
 
-    /**
-     * Factory for constructing DevByteViewModel with parameter
-     */
     class Factory(val repository: CurrenciesRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(CurrenciesViewModel::class.java)) {
