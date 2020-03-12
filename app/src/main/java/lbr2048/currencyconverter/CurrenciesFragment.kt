@@ -41,7 +41,11 @@ class CurrenciesFragment : Fragment() {
         })
 
         viewModel.result.observe(viewLifecycleOwner, Observer {
-            currenciesAdapter.submitList(it)
+            currenciesAdapter.submitList(it) {
+                // TODO do not scroll to top when rates are updated, only when an item is clicked.
+                //  Perhaps wrap result and an enum that identifies the type of change made to the list
+                list.scrollToPosition(0)
+            }
         })
 
         // Set the adapter

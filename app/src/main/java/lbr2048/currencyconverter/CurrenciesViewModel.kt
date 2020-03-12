@@ -12,17 +12,19 @@ import kotlin.concurrent.schedule
 class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewModel() {
 
     private lateinit var timer: Timer
-
     private val _inputValue = MutableLiveData<Double>()
+
     val inputValue: LiveData<Double>
         get() = _inputValue
-
     private val _inputCurrency = MutableLiveData<String>()
+
     val inputCurrency: LiveData<String>
         get() = _inputCurrency
 
     private val rates: LiveData<List<Currency>> = repository.rates
+
     val result = MediatorLiveData<List<Currency>>()
+    private val orderedCurrencies = MutableLiveData<List<Currency>>()
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -31,14 +33,19 @@ class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewMo
 
         setInputValueAndCurrency(1.0, "EUR")
 
+        orderedCurrencies.value = listOf(Currency(id = "AUD"), Currency(id = "EUR"), Currency(id = "BGN"), Currency(id = "BRL"), Currency(id = "CAD"), Currency(id = "CHF"), Currency(id = "CNY"), Currency(id = "CZK"), Currency(id = "DKK"), Currency(id = "GBP"), Currency(id = "HKD"), Currency(id = "HRK"), Currency(id = "HUF"), Currency(id = "IDR"), Currency(id = "ILS"), Currency(id = "INR"), Currency(id = "ISK"), Currency(id = "JPY"), Currency(id = "KRW"), Currency(id = "MXN"), Currency(id = "MYR"), Currency(id = "NOK"), Currency(id = "NZD"), Currency(id = "PHP"), Currency(id = "PLN"), Currency(id = "RON"), Currency(id = "RUB"), Currency(id = "SEK"), Currency(id = "SGD"), Currency(id = "THB"), Currency(id = "USD"), Currency(id = "ZAR"))
+
         result.addSource(inputValue) {
-            result.value =  combineLatestData(inputValue, inputCurrency, rates)
+            result.value =  combineLatestData(inputValue, inputCurrency, rates, orderedCurrencies)
         }
         result.addSource(inputCurrency) {
-            result.value =  combineLatestData(inputValue, inputCurrency, rates)
+            result.value =  combineLatestData(inputValue, inputCurrency, rates, orderedCurrencies)
         }
         result.addSource(rates) {
-            result.value =  combineLatestData(inputValue, inputCurrency, rates)
+            result.value =  combineLatestData(inputValue, inputCurrency, rates, orderedCurrencies)
+        }
+        result.addSource(orderedCurrencies) {
+            result.value =  combineLatestData(inputValue, inputCurrency, rates, orderedCurrencies)
         }
     }
 
@@ -51,6 +58,16 @@ class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewMo
 
     fun cancelTimer() {
         timer.cancel()
+    }
+
+    fun moveItemToTop(position: Int) {
+        Log.i("POSITION_TAG", "Move item $position to top")
+        val toMutableList = orderedCurrencies.value?.toMutableList()
+        toMutableList?.let {
+            val removeAt = toMutableList.removeAt(position)
+            toMutableList.add(0, removeAt)
+        }
+        orderedCurrencies.value = toMutableList
     }
 
     fun setInputValue(value: Double) {
@@ -66,6 +83,7 @@ class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewMo
     }
 
     fun setInputValueAndCurrency(value: Double, currency: String) {
+        Log.i("POSITION_TAG", "Item $currency clicked")
         if (_inputValue.value != value) {
             _inputValue.value = value
         }
@@ -77,36 +95,38 @@ class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewMo
     private fun combineLatestData(
         inputValueResult: LiveData<Double>,
         inputCurrencyResult: LiveData<String>,
-        ratesResult: LiveData<List<Currency>>
+        ratesResult: LiveData<List<Currency>>,
+        orderedCurrenciesResult: LiveData<List<Currency>>
     ): List<Currency> {
         val inputValue = inputValueResult.value
         val inputCurrency = inputCurrencyResult.value
         val rates = ratesResult.value
+        val orderedCurrencies = orderedCurrenciesResult.value
 
-        if (inputValue == null || inputCurrency == null || rates == null) {
+        if (inputValue == null || inputCurrency == null || rates.isNullOrEmpty() || orderedCurrencies.isNullOrEmpty()) {
             // TODO show error
             return emptyList()
         }
 
-        return convertAll(inputValue, inputCurrency, rates.asMap(), rates)
+        return convertAll(inputValue, inputCurrency, rates, orderedCurrencies)
     }
 
     // TODO improve code, it is confusing
     private fun convertAll(
         value: Double,
         inputCurrency: String,
-        ratesMap: Map<String, Double?>,
-        rates: List<Currency>?
+        rates:  List<Currency>,
+        orderedCurrencies: List<Currency>
     ): MutableList<Currency> {
         Log.i("CONVERT_TAG", "Convert $value from $inputCurrency")
 
         val newCurrencies: MutableList<Currency> = mutableListOf()
-        rates?.map {
+        orderedCurrencies.map {
             newCurrencies.add(Currency(it.id, it.name, convert(
                 value,
                 inputCurrency,
                 it.id,
-                ratesMap
+                rates.asMap()
             )))
         }
 
@@ -118,7 +138,7 @@ class CurrenciesViewModel(private val repository: CurrenciesRepository) : ViewMo
         value: Double,
         inputCurrency: String,
         outputCurrency: String,
-        ratesMap: Map<String, Double?>
+        ratesMap: Map<String, Double>
     ): Double {
         return value / ratesMap[inputCurrency]!! * ratesMap[outputCurrency]!!
     }

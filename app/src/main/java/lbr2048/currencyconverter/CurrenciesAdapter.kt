@@ -3,7 +3,6 @@ package lbr2048.currencyconverter
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_currency_item.view.*
 
 class CurrenciesAdapter(private val viewModel: CurrenciesViewModel)
@@ -34,6 +33,7 @@ class CurrenciesAdapter(private val viewModel: CurrenciesViewModel)
             setOnClickListener {
                 Log.i("CLICK_TAG", "$item item clicked")
                 viewModel.setInputValueAndCurrency(item.value, item.id)
+                viewModel.moveItemToTop(holder.adapterPosition)
             }
         }
 
