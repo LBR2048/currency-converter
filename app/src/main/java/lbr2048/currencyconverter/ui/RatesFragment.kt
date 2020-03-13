@@ -1,9 +1,6 @@
 package lbr2048.currencyconverter.ui
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,14 +36,6 @@ class RatesFragment : Fragment() {
         ratesAdapter =
             RatesAdapter(requireContext(), viewModel)
 
-        viewModel.inputValue.observe(viewLifecycleOwner, Observer {
-            value.setText(it.toString())
-        })
-
-        viewModel.inputCurrency.observe(viewLifecycleOwner, Observer {
-            currency.setText(it)
-        })
-
         viewModel.result.observe(viewLifecycleOwner, Observer {
             ratesAdapter.submitList(it) {
                 // TODO do not scroll to top when rates are updated, only when an item is clicked.
@@ -59,34 +48,6 @@ class RatesFragment : Fragment() {
         with(list) {
             layoutManager = LinearLayoutManager(context)
             adapter = ratesAdapter
-        }
-
-        // TODO remove (this is just for prototyping)
-        currency.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {}
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                Log.i("TEXT_TAG", "Currency is $s")
-                viewModel.setInputCurrency(currency.text.toString())
-            }
-        })
-
-        // TODO remove (this is just for prototyping)
-        value.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {}
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                Log.i("TEXT_TAG", "Value is $s")
-                viewModel.setInputValue(value.text.toString().toDouble())
-            }
-        })
-
-        // TODO remove (this is just for prototyping)
-        convertButton.setOnClickListener {
-            viewModel.setInputValueAndCurrency(
-                value.text.toString().toDouble(),
-                currency.text.toString()
-            )
         }
     }
 

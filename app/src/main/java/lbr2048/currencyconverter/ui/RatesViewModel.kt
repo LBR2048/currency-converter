@@ -15,11 +15,11 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
     private lateinit var timer: Timer
     private val _inputValue = MutableLiveData<Double>()
 
-    val inputValue: LiveData<Double>
+    private val inputValue: LiveData<Double>
         get() = _inputValue
     private val _inputCurrency = MutableLiveData<String>()
 
-    val inputCurrency: LiveData<String>
+    private val inputCurrency: LiveData<String>
         get() = _inputCurrency
 
     private val rates: LiveData<List<Rate>> = repository.rates
@@ -102,18 +102,6 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
             toMutableList.add(0, removeAt)
         }
         orderedCurrencies.value = toMutableList
-    }
-
-    fun setInputValue(value: Double) {
-        if (_inputValue.value != value) {
-            _inputValue.value = value
-        }
-    }
-
-    fun setInputCurrency(currency: String) {
-        if (_inputCurrency.value != currency) {
-            _inputCurrency.value = currency
-        }
     }
 
     fun setInputValueAndCurrency(value: Double, currency: String) {
