@@ -35,38 +35,38 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
         setInputValueAndCurrency(1.0, "EUR")
 
         orderedCurrencies.value = listOf(
-            Rate(id = "AUD"),
-            Rate(id = "EUR"),
-            Rate(id = "BGN"),
-            Rate(id = "BRL"),
-            Rate(id = "CAD"),
-            Rate(id = "CHF"),
-            Rate(id = "CNY"),
-            Rate(id = "CZK"),
-            Rate(id = "DKK"),
-            Rate(id = "GBP"),
-            Rate(id = "HKD"),
-            Rate(id = "HRK"),
-            Rate(id = "HUF"),
-            Rate(id = "IDR"),
-            Rate(id = "ILS"),
-            Rate(id = "INR"),
-            Rate(id = "ISK"),
-            Rate(id = "JPY"),
-            Rate(id = "KRW"),
-            Rate(id = "MXN"),
-            Rate(id = "MYR"),
-            Rate(id = "NOK"),
-            Rate(id = "NZD"),
-            Rate(id = "PHP"),
-            Rate(id = "PLN"),
-            Rate(id = "RON"),
-            Rate(id = "RUB"),
-            Rate(id = "SEK"),
-            Rate(id = "SGD"),
-            Rate(id = "THB"),
-            Rate(id = "USD"),
-            Rate(id = "ZAR")
+            Rate(currencyCode = "AUD"),
+            Rate(currencyCode = "EUR"),
+            Rate(currencyCode = "BGN"),
+            Rate(currencyCode = "BRL"),
+            Rate(currencyCode = "CAD"),
+            Rate(currencyCode = "CHF"),
+            Rate(currencyCode = "CNY"),
+            Rate(currencyCode = "CZK"),
+            Rate(currencyCode = "DKK"),
+            Rate(currencyCode = "GBP"),
+            Rate(currencyCode = "HKD"),
+            Rate(currencyCode = "HRK"),
+            Rate(currencyCode = "HUF"),
+            Rate(currencyCode = "IDR"),
+            Rate(currencyCode = "ILS"),
+            Rate(currencyCode = "INR"),
+            Rate(currencyCode = "ISK"),
+            Rate(currencyCode = "JPY"),
+            Rate(currencyCode = "KRW"),
+            Rate(currencyCode = "MXN"),
+            Rate(currencyCode = "MYR"),
+            Rate(currencyCode = "NOK"),
+            Rate(currencyCode = "NZD"),
+            Rate(currencyCode = "PHP"),
+            Rate(currencyCode = "PLN"),
+            Rate(currencyCode = "RON"),
+            Rate(currencyCode = "RUB"),
+            Rate(currencyCode = "SEK"),
+            Rate(currencyCode = "SGD"),
+            Rate(currencyCode = "THB"),
+            Rate(currencyCode = "USD"),
+            Rate(currencyCode = "ZAR")
         )
 
         result.addSource(inputValue) {
@@ -158,10 +158,10 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
         orderedRates.map {
             newRates.add(
                 Rate(
-                    it.id, convert(
+                    it.currencyCode, convert(
                         value,
                         inputCurrency,
-                        it.id,
+                        it.currencyCode,
                         rates.asMap()
                     )
                 )

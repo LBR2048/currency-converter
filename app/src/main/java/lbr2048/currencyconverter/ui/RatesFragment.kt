@@ -37,7 +37,7 @@ class RatesFragment : Fragment() {
         )
             .get(RatesViewModel::class.java)
         currenciesAdapter =
-            CurrenciesAdapter(viewModel)
+            CurrenciesAdapter(requireContext(), viewModel)
 
         viewModel.inputValue.observe(viewLifecycleOwner, Observer {
             value.setText(it.toString())
