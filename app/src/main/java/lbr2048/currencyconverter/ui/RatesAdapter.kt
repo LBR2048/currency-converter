@@ -18,12 +18,12 @@ import kotlinx.android.synthetic.main.fragment_currency_item.view.*
 import lbr2048.currencyconverter.R
 import java.util.*
 
-class CurrenciesAdapter(
+class RatesAdapter(
     private val context: Context,
     private val viewModel: RatesViewModel
 )
-    : ListAdapter<Rate, CurrenciesAdapter.ViewHolder>(
-    CurrencyDiffCallback()
+    : ListAdapter<Rate, RatesAdapter.ViewHolder>(
+    RateDiffCallback()
 ) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -81,7 +81,7 @@ class CurrenciesAdapter(
     }
 }
 
-class CurrencyDiffCallback : DiffUtil.ItemCallback<Rate>() {
+class RateDiffCallback : DiffUtil.ItemCallback<Rate>() {
     override fun areItemsTheSame(oldItem: Rate, newItem: Rate): Boolean {
         return oldItem.currencyCode == newItem.currencyCode
     }

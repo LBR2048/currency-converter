@@ -19,7 +19,7 @@ import lbr2048.currencyconverter.data.local.getDatabase
 class RatesFragment : Fragment() {
 
     private lateinit var viewModel: RatesViewModel
-    private lateinit var currenciesAdapter: CurrenciesAdapter
+    private lateinit var ratesAdapter: RatesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,8 +36,8 @@ class RatesFragment : Fragment() {
             RatesViewModel.Factory(repository)
         )
             .get(RatesViewModel::class.java)
-        currenciesAdapter =
-            CurrenciesAdapter(requireContext(), viewModel)
+        ratesAdapter =
+            RatesAdapter(requireContext(), viewModel)
 
         viewModel.inputValue.observe(viewLifecycleOwner, Observer {
             value.setText(it.toString())
@@ -48,7 +48,7 @@ class RatesFragment : Fragment() {
         })
 
         viewModel.result.observe(viewLifecycleOwner, Observer {
-            currenciesAdapter.submitList(it) {
+            ratesAdapter.submitList(it) {
                 // TODO do not scroll to top when rates are updated, only when an item is clicked.
                 //  Perhaps wrap result and an enum that identifies the type of change made to the list
                 list.scrollToPosition(0)
@@ -58,7 +58,7 @@ class RatesFragment : Fragment() {
         // Set the adapter
         with(list) {
             layoutManager = LinearLayoutManager(context)
-            adapter = currenciesAdapter
+            adapter = ratesAdapter
         }
 
         // TODO remove (this is just for prototyping)
