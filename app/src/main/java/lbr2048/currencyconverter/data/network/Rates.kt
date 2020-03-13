@@ -1,7 +1,7 @@
-package lbr2048.currencyconverter.network
+package lbr2048.currencyconverter.data.network
 
 import com.squareup.moshi.Json
-import lbr2048.currencyconverter.Currency
+import lbr2048.currencyconverter.ui.Rate
 
 data class Rates(
     @Json(name = "AUD") var AUD: Double? = null,
@@ -72,38 +72,38 @@ data class Rates(
         "ZAR" to ZAR
     )
 
-    fun getRates(): List<Currency> = listOf(
-        Currency(id = "EUR", value = 1.0),
-        Currency(id = "AUD", value = AUD!!),
-        Currency(id = "BGN", value = BGN!!),
-        Currency(id = "BRL", value = BRL!!),
-        Currency(id = "CAD", value = CAD!!),
-        Currency(id = "CHF", value = CHF!!),
-        Currency(id = "CNY", value = CNY!!),
-        Currency(id = "CZK", value = CZK!!),
-        Currency(id = "DKK", value = DKK!!),
-        Currency(id = "GBP", value = GBP!!),
-        Currency(id = "HKD", value = HKD!!),
-        Currency(id = "HRK", value = HRK!!),
-        Currency(id = "HUF", value = HUF!!),
-        Currency(id = "IDR", value = IDR!!),
-        Currency(id = "ILS", value = ILS!!),
-        Currency(id = "INR", value = INR!!),
-        Currency(id = "ISK", value = ISK!!),
-        Currency(id = "JPY", value = JPY!!),
-        Currency(id = "KRW", value = KRW!!),
-        Currency(id = "MXN", value = MXN!!),
-        Currency(id = "MYR", value = MYR!!),
-        Currency(id = "NOK", value = NOK!!),
-        Currency(id = "NZD", value = NZD!!),
-        Currency(id = "PHP", value = PHP!!),
-        Currency(id = "PLN", value = PLN!!),
-        Currency(id = "RON", value = RON!!),
-        Currency(id = "RUB", value = RUB!!),
-        Currency(id = "SEK", value = SEK!!),
-        Currency(id = "SGD", value = SGD!!),
-        Currency(id = "THB", value = THB!!),
-        Currency(id = "USD", value = USD!!),
-        Currency(id = "ZAR", value = ZAR!!)
+    fun getRates(): List<Rate> = listOf(
+        Rate(id = "EUR", value = 1.0),
+        Rate(id = "AUD", value = AUD!!),
+        Rate(id = "BGN", value = BGN!!),
+        Rate(id = "BRL", value = BRL!!),
+        Rate(id = "CAD", value = CAD!!),
+        Rate(id = "CHF", value = CHF!!),
+        Rate(id = "CNY", value = CNY!!),
+        Rate(id = "CZK", value = CZK!!),
+        Rate(id = "DKK", value = DKK!!),
+        Rate(id = "GBP", value = GBP!!),
+        Rate(id = "HKD", value = HKD!!),
+        Rate(id = "HRK", value = HRK!!),
+        Rate(id = "HUF", value = HUF!!),
+        Rate(id = "IDR", value = IDR!!),
+        Rate(id = "ILS", value = ILS!!),
+        Rate(id = "INR", value = INR!!),
+        Rate(id = "ISK", value = ISK!!),
+        Rate(id = "JPY", value = JPY!!),
+        Rate(id = "KRW", value = KRW!!),
+        Rate(id = "MXN", value = MXN!!),
+        Rate(id = "MYR", value = MYR!!),
+        Rate(id = "NOK", value = NOK!!),
+        Rate(id = "NZD", value = NZD!!),
+        Rate(id = "PHP", value = PHP!!),
+        Rate(id = "PLN", value = PLN!!),
+        Rate(id = "RON", value = RON!!),
+        Rate(id = "RUB", value = RUB!!),
+        Rate(id = "SEK", value = SEK!!),
+        Rate(id = "SGD", value = SGD!!),
+        Rate(id = "THB", value = THB!!),
+        Rate(id = "USD", value = USD!!),
+        Rate(id = "ZAR", value = ZAR!!)
     )
 }

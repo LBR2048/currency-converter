@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="lbr2048.currencyconverter.CurrenciesFragment"
+        android:name="lbr2048.currencyconverter.ui.RatesFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

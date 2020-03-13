@@ -1,4 +1,4 @@
-package lbr2048.currencyconverter
+package lbr2048.currencyconverter.ui
 
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,9 +13,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_currency_item.view.*
+import lbr2048.currencyconverter.R
 
-class CurrenciesAdapter(private val viewModel: CurrenciesViewModel)
-    : ListAdapter<Currency, CurrenciesAdapter.ViewHolder>(CurrencyDiffCallback()) {
+class CurrenciesAdapter(private val viewModel: RatesViewModel)
+    : ListAdapter<Rate, CurrenciesAdapter.ViewHolder>(
+    CurrencyDiffCallback()
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -77,12 +80,12 @@ class CurrenciesAdapter(private val viewModel: CurrenciesViewModel)
     }
 }
 
-class CurrencyDiffCallback : DiffUtil.ItemCallback<Currency>() {
-    override fun areItemsTheSame(oldItem: Currency, newItem: Currency): Boolean {
+class CurrencyDiffCallback : DiffUtil.ItemCallback<Rate>() {
+    override fun areItemsTheSame(oldItem: Rate, newItem: Rate): Boolean {
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: Currency, newItem: Currency): Boolean {
+    override fun areContentsTheSame(oldItem: Rate, newItem: Rate): Boolean {
         return oldItem == newItem
     }
 }

@@ -1,21 +1,21 @@
-package lbr2048.currencyconverter.database
+package lbr2048.currencyconverter.data.local
 
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import lbr2048.currencyconverter.Currency
+import lbr2048.currencyconverter.ui.Rate
 
 @Dao
 interface RateDao {
 
-    @Query("SELECT * FROM currency")
-    fun getRates(): LiveData<List<Currency>>
+    @Query("SELECT * FROM rate")
+    fun getRates(): LiveData<List<Rate>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(rates: List<Currency>)
+    fun insertAll(rates: List<Rate>)
 }
 
-@Database(entities = [Currency::class], version = 1)
+@Database(entities = [Rate::class], version = 1)
 abstract class RatesDatabase: RoomDatabase() {
     abstract val rateDao: RateDao
 }

@@ -1,4 +1,4 @@
-package lbr2048.currencyconverter
+package lbr2048.currencyconverter.ui
 
 import android.os.Bundle
 import android.text.Editable
@@ -12,11 +12,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_currency.*
-import lbr2048.currencyconverter.database.getDatabase
+import lbr2048.currencyconverter.R
+import lbr2048.currencyconverter.data.RatesRepository
+import lbr2048.currencyconverter.data.local.getDatabase
 
-class CurrenciesFragment : Fragment() {
+class RatesFragment : Fragment() {
 
-    private lateinit var viewModel: CurrenciesViewModel
+    private lateinit var viewModel: RatesViewModel
     private lateinit var currenciesAdapter: CurrenciesAdapter
 
     override fun onCreateView(
@@ -27,10 +29,15 @@ class CurrenciesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val repository = CurrenciesRepository(getDatabase(requireContext()))
-        viewModel = ViewModelProvider(this, CurrenciesViewModel.Factory(repository))
-            .get(CurrenciesViewModel::class.java)
-        currenciesAdapter = CurrenciesAdapter(viewModel)
+        val repository = RatesRepository(
+            getDatabase(requireContext())
+        )
+        viewModel = ViewModelProvider(this,
+            RatesViewModel.Factory(repository)
+        )
+            .get(RatesViewModel::class.java)
+        currenciesAdapter =
+            CurrenciesAdapter(viewModel)
 
         viewModel.inputValue.observe(viewLifecycleOwner, Observer {
             value.setText(it.toString())
