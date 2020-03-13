@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -60,20 +59,12 @@ class CurrenciesAdapter(private val viewModel: RatesViewModel)
                 }
             }
         }
-
-        with(holder.convertButton) {
-            setOnClickListener {
-                Log.i("CONVERT_TAG", "Convert item ${item.id} ${item.value}")
-                viewModel.setInputValueAndCurrency(item.value, item.id)
-            }
-        }
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val idView: TextView = view.item_number
         val contentView: TextView = view.content
         val valueView: EditText = view.value
-        val convertButton: Button = view.itemConvertButton
 
         override fun toString(): String {
             return super.toString() + " '" + contentView.text + "'"
