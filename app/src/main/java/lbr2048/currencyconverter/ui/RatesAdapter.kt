@@ -1,5 +1,6 @@
 package lbr2048.currencyconverter.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
@@ -32,13 +33,15 @@ class RatesAdapter(
         return ViewHolder(view)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         Glide.with(context).load(item.getFlagUrl()).into(holder.flagView)
         holder.idView.text = item.currencyCode
-        holder.idView.text = item.currencyCode
         holder.contentView.text = Currency.getInstance(item.currencyCode).displayName
-        holder.valueView.setText(item.value.toString())
+
+        val digits = Currency.getInstance(item.currencyCode).defaultFractionDigits
+        holder.valueView.setText("%.${digits}f".format(item.value))
 
         with(holder.view) {
             setOnClickListener {
