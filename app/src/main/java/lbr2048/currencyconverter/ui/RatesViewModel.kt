@@ -158,7 +158,7 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
         orderedRates.map {
             newRates.add(
                 Rate(
-                    it.id, it.name, convert(
+                    it.id, convert(
                         value,
                         inputCurrency,
                         it.id,

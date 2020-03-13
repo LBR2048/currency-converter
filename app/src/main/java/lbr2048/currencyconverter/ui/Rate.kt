@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class Rate(
     @PrimaryKey val id: String,
-    val name: String = "Unknown",
     val value: Double = -1.0
 )
 

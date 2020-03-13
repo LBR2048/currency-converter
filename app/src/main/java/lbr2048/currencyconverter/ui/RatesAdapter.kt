@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_currency_item.view.*
 import lbr2048.currencyconverter.R
+import java.util.*
 
 class CurrenciesAdapter(private val viewModel: RatesViewModel)
     : ListAdapter<Rate, CurrenciesAdapter.ViewHolder>(
@@ -29,7 +30,7 @@ class CurrenciesAdapter(private val viewModel: RatesViewModel)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         holder.idView.text = item.id
-        holder.contentView.text = item.name
+        holder.contentView.text = Currency.getInstance(item.id).displayName
         holder.valueView.setText(item.value.toString())
 
         with(holder.view) {
