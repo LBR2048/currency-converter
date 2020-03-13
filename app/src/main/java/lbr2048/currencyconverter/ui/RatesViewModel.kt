@@ -171,14 +171,16 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
         return newRates
     }
 
-    // TODO Fix rounding error when fixing from the same conversion to itself
     private fun convert(
         value: Double,
         inputCurrency: String,
         outputCurrency: String,
         ratesMap: Map<String, Double>
     ): Double {
-        return value / ratesMap[inputCurrency]!! * ratesMap[outputCurrency]!!
+        return if (inputCurrency == outputCurrency)
+            value
+        else
+            value / ratesMap[inputCurrency]!! * ratesMap[outputCurrency]!!
     }
 
     private fun getExchangeRatesFromRepository() {
