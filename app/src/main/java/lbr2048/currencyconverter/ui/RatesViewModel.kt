@@ -20,7 +20,8 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
 
     private val rates: LiveData<List<Rate>> = repository.rates
 
-    val result = MediatorLiveData<List<Rate>>()
+    val result = MediatorLiveData<Result<List<Rate>>>()
+
     private val orderedCurrencies = MutableLiveData<List<Rate>>()
 
     private var viewModelJob = Job()
@@ -66,13 +67,13 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
         )
 
         result.addSource(input) {
-            result.value =  combineLatestData(input, rates, orderedCurrencies)
+            result.value = Result(combineLatestData(input, rates, orderedCurrencies), false)
         }
         result.addSource(rates) {
-            result.value =  combineLatestData(input, rates, orderedCurrencies)
+            result.value = Result(combineLatestData(input, rates, orderedCurrencies), false)
         }
         result.addSource(orderedCurrencies) {
-            result.value =  combineLatestData(input, rates, orderedCurrencies)
+            result.value = Result(combineLatestData(input, rates, orderedCurrencies), true)
         }
     }
 

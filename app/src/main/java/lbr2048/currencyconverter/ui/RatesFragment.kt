@@ -33,11 +33,13 @@ class RatesFragment : Fragment() {
             .get(RatesViewModel::class.java)
         ratesAdapter = RatesAdapter(requireContext(), viewModel)
 
-        viewModel.result.observe(viewLifecycleOwner, Observer {
-            ratesAdapter.submitList(it) {
-                // TODO do not scroll to top when rates are updated, only when an item is clicked.
-                //  Perhaps wrap result and an enum that identifies the type of change made to the list
-                list.scrollToPosition(0)
+        viewModel.result.observe(viewLifecycleOwner, Observer { result ->
+            if (result.shouldScrollToTop) {
+                ratesAdapter.submitList(result.data) {
+                    list.scrollToPosition(0)
+                }
+            } else {
+                ratesAdapter.submitList(result.data)
             }
         })
 
