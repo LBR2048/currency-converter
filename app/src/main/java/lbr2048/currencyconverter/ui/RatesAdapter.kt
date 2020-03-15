@@ -50,8 +50,7 @@ class RatesAdapter(
         with(holder.view) {
             setOnClickListener {
                 Log.i("CLICK_TAG", "$item item clicked")
-                viewModel.setInput(item)
-                viewModel.moveItemToTop(holder.adapterPosition)
+                viewModel.setInput(item, holder.adapterPosition)
             }
         }
 
@@ -65,7 +64,7 @@ class RatesAdapter(
                 } else {
                     Rate(item.currencyCode, s.toString().toDouble())
                 }
-                viewModel.setInput(input)
+                viewModel.setInput(input, holder.adapterPosition)
             }
         }
         with(holder.valueView) {

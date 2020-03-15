@@ -87,7 +87,15 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
         timer.cancel()
     }
 
-    fun moveItemToTop(position: Int) {
+    fun setInput(rate: Rate, position: Int) {
+        Log.i("POSITION_TAG", "Item $rate clicked")
+        if (_input.value != rate) {
+            _input.value = rate
+        }
+        if (position != 0) moveItemToTop(position)
+    }
+
+    private fun moveItemToTop(position: Int) {
         Log.i("POSITION_TAG", "Move item $position to top")
         val toMutableList = orderedCurrencies.value?.toMutableList()
         toMutableList?.let {
@@ -95,13 +103,6 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
             toMutableList.add(0, removeAt)
         }
         orderedCurrencies.value = toMutableList
-    }
-
-    fun setInput(rate: Rate) {
-        Log.i("POSITION_TAG", "Item $rate clicked")
-        if (_input.value != rate) {
-            _input.value = rate
-        }
     }
 
     private fun combineLatestData(
