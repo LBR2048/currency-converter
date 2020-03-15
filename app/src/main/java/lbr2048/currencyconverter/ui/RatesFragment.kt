@@ -29,12 +29,9 @@ class RatesFragment : Fragment() {
         val repository = RatesRepository(
             getDatabase(requireContext())
         )
-        viewModel = ViewModelProvider(this,
-            RatesViewModel.Factory(repository)
-        )
+        viewModel = ViewModelProvider(this, RatesViewModel.Factory(repository))
             .get(RatesViewModel::class.java)
-        ratesAdapter =
-            RatesAdapter(requireContext(), viewModel)
+        ratesAdapter = RatesAdapter(requireContext(), viewModel)
 
         viewModel.result.observe(viewLifecycleOwner, Observer {
             ratesAdapter.submitList(it) {

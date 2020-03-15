@@ -13,14 +13,10 @@ import kotlin.concurrent.schedule
 class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
 
     private lateinit var timer: Timer
-    private val _inputValue = MutableLiveData<Double>()
 
-    private val inputValue: LiveData<Double>
-        get() = _inputValue
-    private val _inputCurrency = MutableLiveData<String>()
-
-    private val inputCurrency: LiveData<String>
-        get() = _inputCurrency
+    private val _input = MutableLiveData<Rate>()
+    private val input: LiveData<Rate>
+        get() = _input
 
     private val rates: LiveData<List<Rate>> = repository.rates
 
@@ -32,7 +28,7 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
 
     init {
 
-        setInputValueAndCurrency(1.0, "EUR")
+        _input.value = Rate("EUR", 1.0)
 
         orderedCurrencies.value = listOf(
             Rate(currencyCode = "AUD"),
@@ -69,17 +65,14 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
             Rate(currencyCode = "ZAR")
         )
 
-        result.addSource(inputValue) {
-            result.value =  combineLatestData(inputValue, inputCurrency, rates, orderedCurrencies)
-        }
-        result.addSource(inputCurrency) {
-            result.value =  combineLatestData(inputValue, inputCurrency, rates, orderedCurrencies)
+        result.addSource(input) {
+            result.value =  combineLatestData(input, rates, orderedCurrencies)
         }
         result.addSource(rates) {
-            result.value =  combineLatestData(inputValue, inputCurrency, rates, orderedCurrencies)
+            result.value =  combineLatestData(input, rates, orderedCurrencies)
         }
         result.addSource(orderedCurrencies) {
-            result.value =  combineLatestData(inputValue, inputCurrency, rates, orderedCurrencies)
+            result.value =  combineLatestData(input, rates, orderedCurrencies)
         }
     }
 
@@ -104,51 +97,45 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
         orderedCurrencies.value = toMutableList
     }
 
-    fun setInputValueAndCurrency(value: Double, currency: String) {
-        Log.i("POSITION_TAG", "Item $currency clicked")
-        if (_inputValue.value != value) {
-            _inputValue.value = value
-        }
-        if (_inputCurrency.value != currency) {
-            _inputCurrency.value = currency
+    fun setInput(rate: Rate) {
+        Log.i("POSITION_TAG", "Item $rate clicked")
+        if (_input.value != rate) {
+            _input.value = rate
         }
     }
 
     private fun combineLatestData(
-        inputValueResult: LiveData<Double>,
-        inputCurrencyResult: LiveData<String>,
+        inputResult: LiveData<Rate>,
         ratesResult: LiveData<List<Rate>>,
         orderedCurrenciesResult: LiveData<List<Rate>>
     ): List<Rate> {
-        val inputValue = inputValueResult.value
-        val inputCurrency = inputCurrencyResult.value
+        val input = inputResult.value
         val rates = ratesResult.value
         val orderedCurrencies = orderedCurrenciesResult.value
 
-        if (inputValue == null || inputCurrency == null || rates.isNullOrEmpty() || orderedCurrencies.isNullOrEmpty()) {
+        if (input == null || rates.isNullOrEmpty() || orderedCurrencies.isNullOrEmpty()) {
             // TODO show error
             return emptyList()
         }
 
-        return convertAll(inputValue, inputCurrency, rates, orderedCurrencies)
+        return convertAll(input, rates, orderedCurrencies)
     }
 
     // TODO improve code, it is confusing
     private fun convertAll(
-        value: Double,
-        inputCurrency: String,
+        input: Rate,
         rates:  List<Rate>,
         orderedRates: List<Rate>
     ): MutableList<Rate> {
-        Log.i("CONVERT_TAG", "Convert $value from $inputCurrency")
+        Log.i("CONVERT_TAG", "Convert $input")
 
         val newRates: MutableList<Rate> = mutableListOf()
         orderedRates.map {
             newRates.add(
                 Rate(
                     it.currencyCode, convert(
-                        value,
-                        inputCurrency,
+                        input.value,
+                        input.currencyCode,
                         it.currencyCode,
                         rates.asMap()
                     )

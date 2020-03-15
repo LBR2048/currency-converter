@@ -46,7 +46,7 @@ class RatesAdapter(
         with(holder.view) {
             setOnClickListener {
                 Log.i("CLICK_TAG", "$item item clicked")
-                viewModel.setInputValueAndCurrency(item.value, item.currencyCode)
+                viewModel.setInput(item)
                 viewModel.moveItemToTop(holder.adapterPosition)
             }
         }
@@ -56,7 +56,7 @@ class RatesAdapter(
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 Log.i("TEXT_TAG", "Item value is $s")
-                viewModel.setInputValueAndCurrency(s.toString().toDouble(), item.currencyCode)
+                viewModel.setInput(Rate(item.currencyCode, s.toString().toDouble()))
             }
         }
         with(holder.valueView) {
