@@ -147,15 +147,16 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
     }
 
     private fun convert(
-        value: Double,
+        value: Double?,
         inputCurrency: String,
         outputCurrency: String,
-        ratesMap: Map<String, Double>
-    ): Double {
-        return if (inputCurrency == outputCurrency)
-            value
-        else
-            value / ratesMap[inputCurrency]!! * ratesMap[outputCurrency]!!
+        ratesMap: Map<String, Double?>
+    ): Double? {
+        return when {
+            value == null -> null
+            inputCurrency == outputCurrency -> value
+            else -> value / ratesMap[inputCurrency]!! * ratesMap[outputCurrency]!!
+        }
     }
 
     private fun getExchangeRatesFromRepository() {

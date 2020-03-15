@@ -40,8 +40,12 @@ class RatesAdapter(
         holder.idView.text = item.currencyCode
         holder.contentView.text = Currency.getInstance(item.currencyCode).displayName
 
-        val digits = Currency.getInstance(item.currencyCode).defaultFractionDigits
-        holder.valueView.setText("%.${digits}f".format(item.value))
+        if (item.value == null) {
+            holder.valueView.setText("")
+        } else {
+            val digits = Currency.getInstance(item.currencyCode).defaultFractionDigits
+            holder.valueView.setText("%.${digits}f".format(item.value))
+        }
 
         with(holder.view) {
             setOnClickListener {
@@ -56,7 +60,12 @@ class RatesAdapter(
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 Log.i("TEXT_TAG", "Item value is $s")
-                viewModel.setInput(Rate(item.currencyCode, s.toString().toDouble()))
+                val input = if (s.isNullOrEmpty()) {
+                    Rate(item.currencyCode, null)
+                } else {
+                    Rate(item.currencyCode, s.toString().toDouble())
+                }
+                viewModel.setInput(input)
             }
         }
         with(holder.valueView) {
