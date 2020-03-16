@@ -46,35 +46,22 @@ class RatesAdapter(
             val digits = Currency.getInstance(item.currencyCode).defaultFractionDigits
             holder.valueView.setText("%.${digits}f".format(item.value))
         }
+    }
 
-        with(holder.view) {
-            setOnClickListener {
-                Log.i("CLICK_TAG", "$item item clicked")
-                viewModel.setInput(item, holder.adapterPosition)
-            }
-        }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            val combinedChange = createCombinedPayload(payloads as List<Change<Rate>>)
+            val oldData = combinedChange.oldData
+            val newData = combinedChange.newData
 
-        val textWatcher = object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {}
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.i("TEXT_TAG", "Item value is $s")
-                val input = if (s.isNullOrEmpty()) {
-                    Rate(item.currencyCode, null)
+            if (oldData.value != newData.value) {
+                if (newData.value == null) {
+                    holder.valueView.setText("")
                 } else {
-                    Rate(item.currencyCode, s.toString().toDouble())
-                }
-                viewModel.setInput(input, holder.adapterPosition)
-            }
-        }
-        with(holder.valueView) {
-            setOnFocusChangeListener { view, b ->
-                if (b) {
-                    Log.i("TEXT_TAG", "$item gained focus")
-                    this.addTextChangedListener(textWatcher)
-                } else {
-                    Log.i("TEXT_TAG", "$item lost focus")
-                    this.removeTextChangedListener(textWatcher)
+                    val digits = Currency.getInstance(newData.currencyCode).defaultFractionDigits
+                    holder.valueView.setText("%.${digits}f".format(newData.value))
                 }
             }
         }
@@ -85,6 +72,43 @@ class RatesAdapter(
         val idView: TextView = view.item_number
         val contentView: TextView = view.content
         val valueView: EditText = view.value
+
+        init {
+            with(view) {
+                setOnClickListener {
+                    val item = getItem(adapterPosition)
+                    Log.i("CLICK_TAG", "$item item clicked")
+                    viewModel.setInput(item, adapterPosition)
+                }
+            }
+
+            val textWatcher = object : TextWatcher {
+                override fun afterTextChanged(p0: Editable?) {}
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+                override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    Log.i("TEXT_TAG", "Item value is $s")
+                    val item = getItem(adapterPosition)
+                    val input = if (s.isNullOrEmpty()) {
+                        Rate(item.currencyCode, null)
+                    } else {
+                        Rate(item.currencyCode, s.toString().toDouble())
+                    }
+                    viewModel.setInput(input, adapterPosition)
+                }
+            }
+            with(valueView) {
+                setOnFocusChangeListener { view, b ->
+                    val item = getItem(adapterPosition)
+                    if (b) {
+                        Log.i("TEXT_TAG", "$item gained focus")
+                        this.addTextChangedListener(textWatcher)
+                    } else {
+                        Log.i("TEXT_TAG", "$item lost focus")
+                        this.removeTextChangedListener(textWatcher)
+                    }
+                }
+            }
+        }
 
         override fun toString(): String {
             return super.toString() + " '" + contentView.text + "'"
@@ -99,5 +123,9 @@ class RateDiffCallback : DiffUtil.ItemCallback<Rate>() {
 
     override fun areContentsTheSame(oldItem: Rate, newItem: Rate): Boolean {
         return oldItem == newItem
+    }
+
+    override fun getChangePayload(oldItem: Rate, newItem: Rate): Any? {
+        return Change(oldItem, newItem)
     }
 }
