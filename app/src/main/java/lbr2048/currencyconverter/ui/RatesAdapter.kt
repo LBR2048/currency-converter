@@ -78,7 +78,7 @@ class RatesAdapter(
                 setOnClickListener {
                     val item = getItem(adapterPosition)
                     Log.i("CLICK_TAG", "$item item clicked")
-                    viewModel.setInput(item, adapterPosition)
+                    valueView.requestFocus()
                 }
             }
 
@@ -97,10 +97,11 @@ class RatesAdapter(
                 }
             }
             with(valueView) {
-                setOnFocusChangeListener { view, b ->
+                setOnFocusChangeListener { _, isFocused ->
                     val item = getItem(adapterPosition)
-                    if (b) {
+                    if (isFocused) {
                         Log.i("TEXT_TAG", "$item gained focus")
+                        viewModel.setInput(item, adapterPosition)
                         this.addTextChangedListener(textWatcher)
                     } else {
                         Log.i("TEXT_TAG", "$item lost focus")
