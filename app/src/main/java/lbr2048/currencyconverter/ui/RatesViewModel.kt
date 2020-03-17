@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import lbr2048.currencyconverter.convertAll
 import lbr2048.currencyconverter.data.RatesRepository
 import java.util.*
 import kotlin.concurrent.schedule
@@ -121,44 +122,6 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
         }
 
         return convertAll(input, rates, orderedCurrencies)
-    }
-
-    // TODO improve code, it is confusing
-    private fun convertAll(
-        input: Rate,
-        rates:  List<Rate>,
-        orderedRates: List<Rate>
-    ): MutableList<Rate> {
-        Log.i("CONVERT_TAG", "Convert $input")
-
-        val newRates: MutableList<Rate> = mutableListOf()
-        orderedRates.map {
-            newRates.add(
-                Rate(
-                    it.currencyCode, convert(
-                        input.value,
-                        input.currencyCode,
-                        it.currencyCode,
-                        rates.asMap()
-                    )
-                )
-            )
-        }
-
-        return newRates
-    }
-
-    private fun convert(
-        value: Double?,
-        inputCurrency: String,
-        outputCurrency: String,
-        ratesMap: Map<String, Double?>
-    ): Double? {
-        return when {
-            value == null -> null
-            inputCurrency == outputCurrency -> value
-            else -> value / ratesMap[inputCurrency]!! * ratesMap[outputCurrency]!!
-        }
     }
 
     private fun getExchangeRatesFromRepository() {
