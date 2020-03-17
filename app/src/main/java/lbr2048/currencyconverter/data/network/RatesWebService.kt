@@ -15,19 +15,17 @@ private val moshi = Moshi.Builder()
     .build()
 
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-//    .addConverterFactory(ScalarsConverterFactory.create())
-    .addCallAdapterFactory(CoroutineCallAdapterFactory())
     .baseUrl(BASE_URL)
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .addCallAdapterFactory(CoroutineCallAdapterFactory())
     .build()
 
 interface CurrenciesWebService {
     @GET("latest?base=EUR")
-    fun getCurrencies(): Deferred<RatesResponse>
-//    fun getCurrencies(): Deferred<String>
+    fun getRatesResponseAsync(): Deferred<RatesResponse>
 }
 
-object CurrenciesWeb {
+object RatesWebService {
     val retrofitService : CurrenciesWebService by lazy {
         retrofit.create(CurrenciesWebService::class.java)
     }
