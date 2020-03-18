@@ -7,32 +7,29 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import lbr2048.currencyconverter.convertAll
+import lbr2048.currencyconverter.data.IRatesRepository
 import lbr2048.currencyconverter.data.RatesRepository
 import java.util.*
 import kotlin.concurrent.schedule
 
-class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
-
-    private lateinit var timer: Timer
-
-    private val _input = MutableLiveData<Rate>()
-    private val input: LiveData<Rate>
-        get() = _input
-
-    private val rates: LiveData<List<Rate>> = repository.rates
+class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
 
     val result = MediatorLiveData<Result<List<Rate>>>()
 
-    private val orderedCurrencies = MutableLiveData<List<Rate>>()
+    private val rates: LiveData<List<Rate>> = repository.rates
+    private val screenRates = MutableLiveData<List<Rate>>()
+    private val inputRate = MutableLiveData<Rate>()
 
     private var viewModelJob = Job()
-    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+    private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
+    private lateinit var timer: Timer
 
     init {
 
-        _input.value = Rate("EUR", 1.0)
+        inputRate.value = Rate("EUR", 1.0)
 
-        orderedCurrencies.value = listOf(
+        screenRates.value = listOf(
             Rate(currencyCode = "AUD"),
             Rate(currencyCode = "EUR"),
             Rate(currencyCode = "BGN"),
@@ -67,14 +64,14 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
             Rate(currencyCode = "ZAR")
         )
 
-        result.addSource(input) {
-            result.value = Result(combineLatestData(input, rates, orderedCurrencies), false)
+        result.addSource(inputRate) {
+            result.value = Result(combineLatestData(inputRate, rates, screenRates), false)
         }
         result.addSource(rates) {
-            result.value = Result(combineLatestData(input, rates, orderedCurrencies), false)
+            result.value = Result(combineLatestData(inputRate, rates, screenRates), false)
         }
-        result.addSource(orderedCurrencies) {
-            result.value = Result(combineLatestData(input, rates, orderedCurrencies), true)
+        result.addSource(screenRates) {
+            result.value = Result(combineLatestData(inputRate, rates, screenRates), true)
         }
     }
 
@@ -91,20 +88,20 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
 
     fun setInput(rate: Rate, position: Int) {
         Log.i("POSITION_TAG", "Item $rate clicked")
-        if (_input.value != rate) {
-            _input.value = rate
+        if (inputRate.value != rate) {
+            inputRate.value = rate
         }
         if (position != 0) moveItemToTop(position)
     }
 
     private fun moveItemToTop(position: Int) {
         Log.i("POSITION_TAG", "Move item $position to top")
-        val toMutableList = orderedCurrencies.value?.toMutableList()
+        val toMutableList = screenRates.value?.toMutableList()
         toMutableList?.let {
             val removeAt = toMutableList.removeAt(position)
             toMutableList.add(0, removeAt)
         }
-        orderedCurrencies.value = toMutableList
+        screenRates.value = toMutableList
     }
 
     private fun combineLatestData(
@@ -124,8 +121,9 @@ class RatesViewModel(private val repository: RatesRepository) : ViewModel() {
         return convertAll(input, rates, orderedCurrencies)
     }
 
+    // https://codelabs.developers.google.com/codelabs/advanced-android-kotlin-training-testing-test-doubles/#3
     private fun getExchangeRatesFromRepository() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             try {
                 repository.refreshRates()
             } catch (e: Exception) {
