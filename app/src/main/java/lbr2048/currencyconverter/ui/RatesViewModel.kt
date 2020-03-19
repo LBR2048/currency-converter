@@ -29,41 +29,6 @@ class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
 
         inputRate.value = Rate("EUR", 1.0)
 
-        screenRates.value = listOf(
-            Rate(currencyCode = "AUD"),
-            Rate(currencyCode = "EUR"),
-            Rate(currencyCode = "BGN"),
-            Rate(currencyCode = "BRL"),
-            Rate(currencyCode = "CAD"),
-            Rate(currencyCode = "CHF"),
-            Rate(currencyCode = "CNY"),
-            Rate(currencyCode = "CZK"),
-            Rate(currencyCode = "DKK"),
-            Rate(currencyCode = "GBP"),
-            Rate(currencyCode = "HKD"),
-            Rate(currencyCode = "HRK"),
-            Rate(currencyCode = "HUF"),
-            Rate(currencyCode = "IDR"),
-            Rate(currencyCode = "ILS"),
-            Rate(currencyCode = "INR"),
-            Rate(currencyCode = "ISK"),
-            Rate(currencyCode = "JPY"),
-            Rate(currencyCode = "KRW"),
-            Rate(currencyCode = "MXN"),
-            Rate(currencyCode = "MYR"),
-            Rate(currencyCode = "NOK"),
-            Rate(currencyCode = "NZD"),
-            Rate(currencyCode = "PHP"),
-            Rate(currencyCode = "PLN"),
-            Rate(currencyCode = "RON"),
-            Rate(currencyCode = "RUB"),
-            Rate(currencyCode = "SEK"),
-            Rate(currencyCode = "SGD"),
-            Rate(currencyCode = "THB"),
-            Rate(currencyCode = "USD"),
-            Rate(currencyCode = "ZAR")
-        )
-
         result.addSource(inputRate) {
             result.value = Result(combineLatestData(inputRate, rates, screenRates), false)
         }
@@ -107,18 +72,23 @@ class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
     private fun combineLatestData(
         inputResult: LiveData<Rate>,
         ratesResult: LiveData<List<Rate>>,
-        orderedCurrenciesResult: LiveData<List<Rate>>
+        screenRatesResult: LiveData<List<Rate>>
     ): List<Rate> {
         val input = inputResult.value
         val rates = ratesResult.value
-        val orderedCurrencies = orderedCurrenciesResult.value
+        val screenRates = screenRatesResult.value
 
-        if (input == null || rates.isNullOrEmpty() || orderedCurrencies.isNullOrEmpty()) {
+        if (input == null || rates.isNullOrEmpty()) {
             // TODO show error
             return emptyList()
         }
 
-        return convertAll(input, rates, orderedCurrencies)
+        if (screenRates.isNullOrEmpty()) {
+            this.screenRates.value = rates
+            return emptyList()
+        }
+
+        return convertAll(input, rates, screenRates)
     }
 
     // https://codelabs.developers.google.com/codelabs/advanced-android-kotlin-training-testing-test-doubles/#3
