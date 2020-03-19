@@ -56,6 +56,9 @@ class RatesAdapter(
             val oldData = combinedChange.oldData
             val newData = combinedChange.newData
 
+            // Focused value line is used for input only
+            if (holder.valueView.isFocused) return
+
             if (oldData.value != newData.value) {
                 if (newData.value == null) {
                     holder.valueView.setText("")
@@ -101,6 +104,8 @@ class RatesAdapter(
                     val item = getItem(adapterPosition)
                     if (isFocused) {
                         Log.i("TEXT_TAG", "$item gained focus")
+                        // Send cursor to the right of the number
+                        setSelection(text.length)
                         viewModel.setInput(item, adapterPosition)
                         this.addTextChangedListener(textWatcher)
                     } else {
