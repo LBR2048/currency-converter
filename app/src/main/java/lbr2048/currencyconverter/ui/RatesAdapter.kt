@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -16,7 +17,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_currency_item.view.*
 import lbr2048.currencyconverter.R
+import lbr2048.currencyconverter.hideKeyboardFrom
+import lbr2048.currencyconverter.showKeyboardFrom
 import java.util.*
+
 
 class RatesAdapter(
     private val context: Context,
@@ -106,15 +110,24 @@ class RatesAdapter(
                     val item = getItem(adapterPosition)
                     if (isFocused) {
                         Log.i("TEXT_TAG", "$item gained focus")
-                        // Send cursor to the right of the number
-                        setSelection(text.length)
                         viewModel.setInput(item, adapterPosition)
+                        setSelection(text.length)
+                        showKeyboardFrom(context, this)
                         this.addTextChangedListener(textWatcher)
                     } else {
                         Log.i("TEXT_TAG", "$item lost focus")
+                        hideKeyboardFrom(context, this)
                         this.removeTextChangedListener(textWatcher)
                     }
                 }
+
+                setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        clearFocus()
+                    }
+                    false
+                }
+
             }
         }
 
