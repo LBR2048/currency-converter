@@ -29,13 +29,17 @@ class RatesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val repository = RatesRepository(
-            getDatabase(requireContext())
-        )
+        val repository = RatesRepository(getDatabase(requireContext()))
         viewModel = ViewModelProvider(this, RatesViewModel.Factory(repository))
             .get(RatesViewModel::class.java)
         ratesAdapter = RatesAdapter(requireContext(), viewModel)
 
+        setupAdapter()
+
+        observeData()
+    }
+
+    private fun observeData() {
         viewModel.result.observe(viewLifecycleOwner, Observer { result ->
             if (result.shouldScrollToTop) {
                 ratesAdapter.submitList(result.data) {
@@ -46,10 +50,16 @@ class RatesFragment : Fragment() {
             }
         })
 
-        errorSnackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), getString(R.string.snackbar_refresh_error), Snackbar.LENGTH_INDEFINITE)
+        errorSnackbar = Snackbar.make(
+            requireActivity().findViewById(android.R.id.content),
+            getString(R.string.snackbar_refresh_error),
+            Snackbar.LENGTH_INDEFINITE
+        )
         viewModel.refreshState.observe(viewLifecycleOwner, Observer { refreshState ->
             when (refreshState) {
-                LOADING -> {}
+                LOADING -> {
+                    // Currently not needed
+                }
                 SUCCESS -> {
                     if (errorSnackbar.isShown) {
                         errorSnackbar.dismiss()
@@ -62,8 +72,9 @@ class RatesFragment : Fragment() {
                 }
             }
         })
+    }
 
-        // Set the adapter
+    private fun setupAdapter() {
         with(list) {
             layoutManager = LinearLayoutManager(context)
             adapter = ratesAdapter

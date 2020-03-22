@@ -32,11 +32,11 @@ class ConversionUtilsTest {
     }
 
     @Test
-    fun convert_toNonExistentCurrency_returnsError() {
+    fun convert_toNonExistentCurrency_returnsNull() {
         val value = 3.14
         val result = convert(value, "CURRENCY1", "NON_EXISTENT", ratesMap)
 
-        assertEquals(result, 2 * value)
+        assertEquals(result, null)
     }
 
     @Test

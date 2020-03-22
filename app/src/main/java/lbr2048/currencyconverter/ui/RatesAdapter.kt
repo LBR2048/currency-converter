@@ -38,8 +38,8 @@ class RatesAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         Glide.with(context).load(item.getFlagUrl()).into(holder.flagView)
-        holder.idView.text = item.currencyCode
-        holder.contentView.text = Currency.getInstance(item.currencyCode).displayName
+        holder.currencyCodeView.text = item.currencyCode
+        holder.currencyNameView.text = Currency.getInstance(item.currencyCode).displayName
 
         if (item.value == null) {
             holder.valueView.setText("")
@@ -77,8 +77,8 @@ class RatesAdapter(
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val flagView: ImageView = view.flag
-        val idView: TextView = view.item_number
-        val contentView: TextView = view.content
+        val currencyCodeView: TextView = view.currencyCode
+        val currencyNameView: TextView = view.currencyName
         val valueView: EditText = view.value
 
         init {
@@ -131,7 +131,7 @@ class RatesAdapter(
         }
 
         override fun toString(): String {
-            return super.toString() + " '" + contentView.text + "'"
+            return super.toString() + " '" + currencyNameView.text + "'"
         }
     }
 }

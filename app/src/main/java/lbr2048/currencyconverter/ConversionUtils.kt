@@ -25,6 +25,11 @@ fun convert(
     return when {
         value == null -> null
         inputCurrency == outputCurrency -> value
-        else -> value / ratesMap[inputCurrency]!! * ratesMap[outputCurrency]!!
+        else -> {
+            val inputRate = ratesMap[inputCurrency]
+            val outputRate = ratesMap[outputCurrency]
+            if (inputRate == null || outputRate == null) return null
+            value / inputRate * outputRate
+        }
     }
 }
