@@ -6,7 +6,7 @@ import lbr2048.currencyconverter.ui.Rate
 import lbr2048.currencyconverter.ui.asMap
 
 fun convertAll(input: Rate, rates: List<Rate>, orderedRates: List<Rate>): List<Rate> {
-    Log.i("CONVERT_TAG", "Convert $input")
+    Log.d("CONVERT_TAG", "Convert $input")
     return orderedRates.map {
         Rate(
             it.currencyCode,

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_margin">16dp</dimen>
+    <dimen name="large_margin">16dp</dimen>
+    <dimen name="small_margin">8dp</dimen>
+    <dimen name="flag_width">60dp</dimen>
+    <dimen name="flag_height">60dp</dimen>
 </resources>

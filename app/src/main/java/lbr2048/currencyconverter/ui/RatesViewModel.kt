@@ -54,7 +54,7 @@ class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
     }
 
     fun setInput(rate: Rate, position: Int) {
-        Log.i("POSITION_TAG", "Item $rate clicked")
+        Log.d("POSITION_TAG", "Item $rate clicked")
         if (inputRate.value != rate) {
             inputRate.value = rate
         }
@@ -62,7 +62,7 @@ class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
     }
 
     private fun moveItemToTop(position: Int) {
-        Log.i("POSITION_TAG", "Move item $position to top")
+        Log.d("POSITION_TAG", "Move item $position to top")
         val toMutableList = screenRates.value?.toMutableList()
         toMutableList?.let {
             val removeAt = toMutableList.removeAt(position)
@@ -106,7 +106,7 @@ class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
         timer.cancel()
     }
 
-    class Factory(val repository: RatesRepository) : ViewModelProvider.Factory {
+    class Factory(private val repository: RatesRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(RatesViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")

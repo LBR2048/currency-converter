@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment"
         android:name="lbr2048.currencyconverter.ui.RatesFragment"
         android:layout_width="0dp"

@@ -21,7 +21,6 @@ import lbr2048.currencyconverter.hideKeyboardFrom
 import lbr2048.currencyconverter.showKeyboardFrom
 import java.util.*
 
-
 class RatesAdapter(
     private val context: Context,
     private val viewModel: RatesViewModel
@@ -76,7 +75,7 @@ class RatesAdapter(
         }
     }
 
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val flagView: ImageView = view.flag
         val idView: TextView = view.item_number
         val contentView: TextView = view.content
@@ -86,7 +85,7 @@ class RatesAdapter(
             with(view) {
                 setOnClickListener {
                     val item = getItem(adapterPosition)
-                    Log.i("CLICK_TAG", "$item item clicked")
+                    Log.d("CLICK_TAG", "$item item clicked")
                     valueView.requestFocus()
                 }
             }
@@ -95,7 +94,7 @@ class RatesAdapter(
                 override fun afterTextChanged(p0: Editable?) {}
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
                 override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.i("TEXT_TAG", "Item value is $s")
+                    Log.d("TEXT_TAG", "Item value is $s")
                     val item = getItem(adapterPosition)
                     val input = if (s.isNullOrEmpty()) {
                         Rate(item.currencyCode, null)
@@ -109,13 +108,13 @@ class RatesAdapter(
                 setOnFocusChangeListener { _, isFocused ->
                     val item = getItem(adapterPosition)
                     if (isFocused) {
-                        Log.i("TEXT_TAG", "$item gained focus")
+                        Log.d("TEXT_TAG", "$item gained focus")
                         viewModel.setInput(item, adapterPosition)
                         setSelection(text.length)
                         showKeyboardFrom(context, this)
                         this.addTextChangedListener(textWatcher)
                     } else {
-                        Log.i("TEXT_TAG", "$item lost focus")
+                        Log.d("TEXT_TAG", "$item lost focus")
                         hideKeyboardFrom(context, this)
                         this.removeTextChangedListener(textWatcher)
                     }
