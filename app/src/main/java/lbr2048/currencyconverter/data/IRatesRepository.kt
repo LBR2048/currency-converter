@@ -8,4 +8,5 @@ interface IRatesRepository {
     val rates: LiveData<List<Rate>>
 
     suspend fun refreshRates()
+    val refreshState: LiveData<RatesRepository.RefreshState>
 }

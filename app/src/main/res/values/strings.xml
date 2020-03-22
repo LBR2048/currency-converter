@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Currency Converter</string>
+    <string name="snackbar_refresh_error">Error updating rates</string>
 </resources>

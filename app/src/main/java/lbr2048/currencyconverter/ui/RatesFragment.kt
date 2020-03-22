@@ -8,15 +8,18 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_currency.*
 import lbr2048.currencyconverter.R
 import lbr2048.currencyconverter.data.RatesRepository
+import lbr2048.currencyconverter.data.RatesRepository.RefreshState.*
 import lbr2048.currencyconverter.data.local.getDatabase
 
 class RatesFragment : Fragment() {
 
     private lateinit var viewModel: RatesViewModel
     private lateinit var ratesAdapter: RatesAdapter
+    private lateinit var errorSnackbar: Snackbar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +43,23 @@ class RatesFragment : Fragment() {
                 }
             } else {
                 ratesAdapter.submitList(result.data)
+            }
+        })
+
+        errorSnackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), getString(R.string.snackbar_refresh_error), Snackbar.LENGTH_INDEFINITE)
+        viewModel.refreshState.observe(viewLifecycleOwner, Observer { refreshState ->
+            when (refreshState) {
+                LOADING -> {}
+                SUCCESS -> {
+                    if (errorSnackbar.isShown) {
+                        errorSnackbar.dismiss()
+                    }
+                }
+                ERROR -> {
+                    if (!errorSnackbar.isShown) {
+                        errorSnackbar.show()
+                    }
+                }
             }
         })
 

@@ -9,12 +9,14 @@ import kotlinx.coroutines.launch
 import lbr2048.currencyconverter.convertAll
 import lbr2048.currencyconverter.data.IRatesRepository
 import lbr2048.currencyconverter.data.RatesRepository
+import lbr2048.currencyconverter.data.RatesRepository.RefreshState
 import java.util.*
 import kotlin.concurrent.schedule
 
 class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
 
     val result = MediatorLiveData<Result<List<Rate>>>()
+    val refreshState: LiveData<RefreshState> = repository.refreshState
 
     private val rates: LiveData<List<Rate>> = repository.rates
     private val screenRates = MutableLiveData<List<Rate>>()
@@ -94,11 +96,7 @@ class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
     // https://codelabs.developers.google.com/codelabs/advanced-android-kotlin-training-testing-test-doubles/#3
     private fun getExchangeRatesFromRepository() {
         viewModelScope.launch {
-            try {
-                repository.refreshRates()
-            } catch (e: Exception) {
-
-            }
+            repository.refreshRates()
         }
     }
 
