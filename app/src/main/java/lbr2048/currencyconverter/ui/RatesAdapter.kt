@@ -1,6 +1,5 @@
 package lbr2048.currencyconverter.ui
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
@@ -33,7 +32,6 @@ class RatesAdapter(
         return ViewHolder(view)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         Glide.with(context).load(item.getFlagUrl()).into(holder.flagView)
@@ -43,8 +41,10 @@ class RatesAdapter(
         if (item.value == null) {
             holder.valueView.setText("")
         } else {
-            val digits = Currency.getInstance(item.currencyCode).defaultFractionDigits
-            holder.valueView.setText("%.${digits}f".format(item.value))
+            // Force "." as decimal separator independently of user locale
+            // due to a bug on Android numeric keyboard
+            val digitCount = Currency.getInstance(item.currencyCode).defaultFractionDigits
+            holder.valueView.setText(String.format(Locale.ROOT, "%.${digitCount}f", item.value))
         }
     }
 
@@ -63,8 +63,10 @@ class RatesAdapter(
                 if (newData.value == null) {
                     holder.valueView.setText("")
                 } else {
-                    val digits = Currency.getInstance(newData.currencyCode).defaultFractionDigits
-                    holder.valueView.setText("%.${digits}f".format(newData.value))
+                    // Force "." as decimal separator independently of user locale
+                    // due to a bug on Android numeric keyboard
+                    val digitCount = Currency.getInstance(newData.currencyCode).defaultFractionDigits
+                    holder.valueView.setText(String.format(Locale.ROOT, "%.${digitCount}f", newData.value))
                 }
             }
         }
