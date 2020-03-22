@@ -19,7 +19,7 @@ class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
     val refreshState: LiveData<RefreshState> = repository.refreshState
 
     private val rates: LiveData<List<Rate>> = repository.rates
-    private val screenRates = MutableLiveData<List<Rate>>()
+    private val orderedRates = MutableLiveData<List<Rate>>()
     private val inputRate = MutableLiveData<Rate>()
 
     private var viewModelJob = Job()
@@ -32,13 +32,13 @@ class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
         inputRate.value = Rate("EUR", 1.0)
 
         result.addSource(inputRate) {
-            result.value = Result(combineLatestData(inputRate, rates, screenRates), false)
+            result.value = Result(combineLatestData(inputRate, rates, orderedRates), false)
         }
         result.addSource(rates) {
-            result.value = Result(combineLatestData(inputRate, rates, screenRates), false)
+            result.value = Result(combineLatestData(inputRate, rates, orderedRates), false)
         }
-        result.addSource(screenRates) {
-            result.value = Result(combineLatestData(inputRate, rates, screenRates), true)
+        result.addSource(orderedRates) {
+            result.value = Result(combineLatestData(inputRate, rates, orderedRates), true)
         }
     }
 
@@ -63,37 +63,33 @@ class RatesViewModel(private val repository: IRatesRepository) : ViewModel() {
 
     private fun moveItemToTop(position: Int) {
         Log.d("POSITION_TAG", "Move item $position to top")
-        val toMutableList = screenRates.value?.toMutableList()
-        toMutableList?.let {
-            val removeAt = toMutableList.removeAt(position)
-            toMutableList.add(0, removeAt)
+        orderedRates.value?.toMutableList()?.let {
+            it.add(0, it.removeAt(position))
+            orderedRates.value = it
         }
-        screenRates.value = toMutableList
     }
 
     private fun combineLatestData(
         inputResult: LiveData<Rate>,
         ratesResult: LiveData<List<Rate>>,
-        screenRatesResult: LiveData<List<Rate>>
+        orderedRatesResult: LiveData<List<Rate>>
     ): List<Rate> {
         val input = inputResult.value
         val rates = ratesResult.value
-        val screenRates = screenRatesResult.value
+        val orderedRates = orderedRatesResult.value
 
         if (input == null || rates.isNullOrEmpty()) {
-            // TODO show error
             return emptyList()
         }
 
-        if (screenRates.isNullOrEmpty()) {
-            this.screenRates.value = rates
+        if (orderedRates.isNullOrEmpty()) {
+            this.orderedRates.value = rates
             return emptyList()
         }
 
-        return convertAll(input, rates, screenRates)
+        return convertAll(input, rates, orderedRates)
     }
 
-    // https://codelabs.developers.google.com/codelabs/advanced-android-kotlin-training-testing-test-doubles/#3
     private fun getExchangeRatesFromRepository() {
         viewModelScope.launch {
             repository.refreshRates()
